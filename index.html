@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Banking App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cloudflare Banking App</title>
+
   <style>
     :root {
       --bg: #f4f4f5;
       --card: #ffffff;
       --text: #111827;
-      --secondary: #6b7280;
-      --accent: #2563eb;
       --border: #d1d5db;
+      --accent: #2563eb;
       --success: #16a34a;
       --danger: #dc2626;
     }
@@ -21,9 +21,8 @@
         --bg: #0f172a;
         --card: #1e293b;
         --text: #f8fafc;
-        --secondary: #94a3b8;
-        --accent: #3b82f6;
         --border: #334155;
+        --accent: #3b82f6;
         --success: #22c55e;
         --danger: #ef4444;
       }
@@ -38,13 +37,12 @@
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
+      padding: 20px;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1000px;
       margin: auto;
-      padding: 20px;
     }
 
     .card {
@@ -53,19 +51,14 @@
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    h1, h2, h3 {
-      margin-top: 0;
     }
 
     input, button, select {
       width: 100%;
       padding: 12px;
+      margin-top: 10px;
       border-radius: 10px;
       border: 1px solid var(--border);
-      margin-top: 10px;
       background: transparent;
       color: var(--text);
     }
@@ -73,35 +66,21 @@
     button {
       background: var(--accent);
       color: white;
-      font-weight: bold;
-      cursor: pointer;
       border: none;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .danger {
-      background: var(--danger);
+      cursor: pointer;
+      font-weight: bold;
     }
 
     .success {
       background: var(--success);
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+    .danger {
+      background: var(--danger);
     }
 
-    .account-item {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      margin-top: 10px;
+    .hidden {
+      display: none;
     }
 
     .balance {
@@ -110,757 +89,400 @@
       color: var(--success);
     }
 
-    .hidden {
-      display: none;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+      gap: 20px;
     }
 
-    .flex {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .small {
-      color: var(--secondary);
-      font-size: 0.9rem;
-    }
-
-    .tag {
-      display: inline-block;
-      background: var(--accent);
-      color: white;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.8rem;
+    .account {
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 10px;
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div id="loginView" class="card">
-      <h1>USD Banking App</h1>
-      <p class="small">Responsive banking system with user and bank/admin access.</p>
 
-      <input id="username" placeholder="Username" />
-      <input id="password" type="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
+<div class="container">
 
-      <div style="margin-top:20px">
-        <h3>Create Account</h3>
-        <input id="newUsername" placeholder="New Username" />
-        <input id="newPassword" type="password" placeholder="New Password" />
-        <button class="success" onclick="createAccount()">Create Account</button>
-      </div>
+  <!-- LOGIN -->
+  <div id="loginView" class="card">
+    <h1>USD Banking App</h1>
 
-      <div class="small" style="margin-top:20px">
-        <strong>Demo Accounts</strong><br>
-        User: alice / 1234<br>
-        User: bob / 1234<br>
-        Admin: admin / admin
-      </div>
-    </div>
+    <input id="loginUsername" placeholder="Username">
+    <input id="loginPassword" type="password" placeholder="Password">
 
-    <div id="userView" class="hidden">
-      <div class="card">
-        <div class="flex" style="justify-content:space-between;align-items:center;">
-          <div>
-            <h2>User Dashboard</h2>
-            <span class="tag" id="welcomeUser"></span>
-          </div>
-          <button class="danger" style="max-width:140px" onclick="logout()">Logout</button>
-        </div>
+    <button onclick="login()">Login</button>
 
-        <p>Current Balance</p>
-        <div class="balance" id="userBalance">$0.00</div>
-      </div>
+    <hr>
 
-      <div class="card">
-        <h3>Account Settings</h3>
-        <input id="currentPassword" type="password" placeholder="Current Password" />
-        <input id="newUserPassword" type="password" placeholder="New Password" />
-        <button onclick="changePassword()">Change Password</button>
-      </div>
+    <h3>Create Account</h3>
 
-      <div class="card">
-        <h3>Transfer Money</h3>
-        <input id="transferTo" placeholder="Receiver Username" />
-        <input id="transferAmount" type="number" placeholder="Amount in USD" />
-        <button onclick="userTransfer()">Send Transfer</button>
-      </div>
+    <input id="registerUsername" placeholder="Username">
+    <input id="registerPassword" type="password" placeholder="Password">
 
-      <div class="card">
-        <h3>Transaction History</h3>
-        <div id="userTransactions"></div>
-      </div>
-    </div>
-
-    <div id="adminView" class="hidden">
-      <div class="card">
-        <div class="flex" style="justify-content:space-between;align-items:center;">
-          <div>
-            <h2>Bank Management Dashboard</h2>
-            <span class="tag">Admin Access</span>
-          </div>
-          <button class="danger" style="max-width:140px" onclick="logout()">Logout</button>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <h3>All Accounts</h3>
-          <div id="accountsList"></div>
-        </div>
-
-        <div class="card">
-          <h3>Bank Balance Controls</h3>
-
-          <label>Target Account</label>
-          <select id="bankTarget"></select>
-
-          <label>Amount (USD)</label>
-          <input id="bankAmount" type="number" placeholder="Amount" />
-
-          <div class="flex">
-            <button class="success" onclick="addFunds()">Add Money</button>
-            <button class="danger" onclick="subtractFunds()">Subtract Money</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Admin Transfer</h3>
-
-          <label>Sender</label>
-          <select id="adminSender"></select>
-
-          <label>Receiver</label>
-          <select id="adminReceiver"></select>
-
-          <label>Amount (USD)</label>
-          <input id="adminAmount" type="number" placeholder="Amount" />
-
-          <button onclick="adminTransfer()">Execute Transfer</button>
-        </div>
-      </div>
-    </div>
+    <button class="success" onclick="register()">
+      Create Account
+    </button>
   </div>
 
-  <script>
-    const STORAGE_KEY = 'banking_app_data';
+  <!-- USER VIEW -->
+  <div id="userView" class="hidden">
 
-    let database = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-      users: [
-        {
-          username: 'alice',
-          password: '1234',
-          balance: 5000,
-          transactions: []
-        },
-        {
-          username: 'bob',
-          password: '1234',
-          balance: 3500,
-          transactions: []
-        },
-        {
-          username: 'admin',
-          password: 'admin',
-          balance: 0,
-          role: 'admin',
-          transactions: []
-        }
-      ]
-    };
+    <div class="card">
+      <h2 id="welcomeUser"></h2>
 
-    let currentUser = null;
+      <p>Balance</p>
+      <div class="balance" id="userBalance">$0</div>
 
-    function saveDatabase() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(database));
-    }
+      <button class="danger" onclick="logout()">
+        Logout
+      </button>
+    </div>
 
-    function formatUSD(value) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-      }).format(value);
-    }
+    <div class="card">
+      <h3>Transfer Money</h3>
 
-    function login() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
+      <input id="transferUser" placeholder="Receiver Username">
 
-      const user = database.users.find(
-        u => u.username === username && u.password === password
-      );
+      <input
+        id="transferAmount"
+        type="number"
+        placeholder="Amount"
+      >
 
-      if (!user) {
-        alert('Invalid login');
-        return;
-      }
+      <button onclick="transferMoney()">
+        Send Money
+      </button>
+    </div>
 
-      currentUser = user;
+    <div class="card">
+      <h3>Change Password</h3>
 
-      document.getElementById('loginView').classList.add('hidden');
+      <input
+        id="newPassword"
+        type="password"
+        placeholder="New Password"
+      >
 
-      if (user.role === 'admin') {
-        document.getElementById('adminView').classList.remove('hidden');
-        renderAdminView();
-      } else {
-        document.getElementById('userView').classList.remove('hidden');
-        renderUserView();
-      }
-    }
+      <button onclick="changePassword()">
+        Change Password
+      </button>
+    </div>
 
-    function logout() {
-      currentUser = null;
+  </div>
 
-      document.getElementById('loginView').classList.remove('hidden');
-      document.getElementById('userView').classList.add('hidden');
-      document.getElementById('adminView').classList.add('hidden');
-    }
+  <!-- ADMIN VIEW -->
+  <div id="adminView" class="hidden">
 
-    function createAccount() {
-      const username = document.getElementById('newUsername').value.trim();
-      const password = document.getElementById('newPassword').value.trim();
+    <div class="card">
+      <h2>Bank Dashboard</h2>
 
-      if (!username || !password) {
-        alert('Fill in all fields');
-        return;
-      }
+      <button class="danger" onclick="logout()">
+        Logout
+      </button>
+    </div>
 
-      const exists = database.users.find(u => u.username === username);
+    <div class="grid">
 
-      if (exists) {
-        alert('Username already exists');
-        return;
-      }
+      <div class="card">
+        <h3>All Accounts</h3>
 
-      database.users.push({
+        <div id="allUsers"></div>
+      </div>
+
+      <div class="card">
+        <h3>Bank Controls</h3>
+
+        <select id="bankUser"></select>
+
+        <input
+          id="bankAmount"
+          type="number"
+          placeholder="Amount"
+        >
+
+        <button class="success" onclick="addMoney()">
+          Add Money
+        </button>
+
+        <button class="danger" onclick="removeMoney()">
+          Remove Money
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+  // CHANGE THIS
+  const API_URL = "https://YOUR-WORKER.workers.dev";
+
+  let currentUser = null;
+
+  // =========================
+  // REGISTER
+  // =========================
+  async function register() {
+
+    const username =
+      document.getElementById("registerUsername").value;
+
+    const password =
+      document.getElementById("registerPassword").value;
+
+    const res = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
         username,
-        password,
-        balance: 0,
-        transactions: []
-      });
-
-      saveDatabase();
-      alert('Account created successfully');
-    }
-
-    function renderUserView() {
-      document.getElementById('welcomeUser').textContent = currentUser.username;
-      document.getElementById('userBalance').textContent = formatUSD(currentUser.balance);
-
-      const txContainer = document.getElementById('userTransactions');
-      txContainer.innerHTML = '';
-
-      if (currentUser.transactions.length === 0) {
-        txContainer.innerHTML = '<p class="small">No transactions yet.</p>';
-        return;
-      }
-
-      currentUser.transactions.slice().reverse().forEach(tx => {
-        const div = document.createElement('div');
-        div.className = 'account-item';
-        div.innerHTML = `
-          <strong>${tx.type}</strong><br>
-          ${tx.message}<br>
-          <span class="small">${tx.date}</span>
-        `;
-        txContainer.appendChild(div);
-      });
-    }
-
-    function changePassword() {
-      const currentPassword = document.getElementById('currentPassword').value.trim();
-      const newPassword = document.getElementById('newUserPassword').value.trim();
-
-      if (currentPassword !== currentUser.password) {
-        alert('Current password is incorrect');
-        return;
-      }
-
-      if (newPassword.length < 4) {
-        alert('New password must be at least 4 characters');
-        return;
-      }
-
-      currentUser.password = newPassword;
-      saveDatabase();
-
-      document.getElementById('currentPassword').value = '';
-      document.getElementById('newUserPassword').value = '';
-
-      alert('Password changed successfully');
-    }
-
-    function userTransfer() {
-      const receiverName = document.getElementById('transferTo').value.trim();
-      const amount = parseFloat(document.getElementById('transferAmount').value);
-
-      const receiver = database.users.find(u => u.username === receiverName);
-
-      if (!receiver) {
-        alert('Receiver not found');
-        return;
-      }
-
-      if (receiver.username === currentUser.username) {
-        alert('Cannot transfer to yourself');
-        return;
-      }
-
-      if (isNaN(amount) || amount <= 0) {
-        alert('Invalid amount');
-        return;
-      }
-
-      if (currentUser.balance < amount) {
-        alert('Insufficient funds');
-        return;
-      }
-
-      currentUser.balance -= amount;
-      receiver.balance += amount;
-
-      const date = new Date().toLocaleString();
-
-      currentUser.transactions.push({
-        type: 'Sent',
-        message: `Sent ${formatUSD(amount)} to ${receiver.username}`,
-        date
-      });
-
-      receiver.transactions.push({
-        type: 'Received',
-        message: `Received ${formatUSD(amount)} from ${currentUser.username}`,
-        date
-      });
-
-      saveDatabase();
-      renderUserView();
-
-      alert('Transfer complete');
-    }
-
-    function renderAdminView() {
-      const accountsList = document.getElementById('accountsList');
-      const senderSelect = document.getElementById('adminSender');
-      const receiverSelect = document.getElementById('adminReceiver');
-      const bankTarget = document.getElementById('bankTarget');
-
-      accountsList.innerHTML = '';
-      senderSelect.innerHTML = '';
-      receiverSelect.innerHTML = '';
-      bankTarget.innerHTML = '';
-
-      database.users.forEach(user => {
-        const accountDiv = document.createElement('div');
-        accountDiv.className = 'account-item';
-        accountDiv.innerHTML = `
-          <strong>${user.username}</strong><br>
-          Balance: ${formatUSD(user.balance)}<br>
-          ${user.role === 'admin' ? '<span class="tag">ADMIN</span>' : ''}
-        `;
-
-        accountsList.appendChild(accountDiv);
-
-        if (user.role !== 'admin') {
-          const option1 = document.createElement('option');
-          option1.value = user.username;
-          option1.textContent = user.username;
-
-          const option2 = document.createElement('option');
-          option2.value = user.username;
-          option2.textContent = user.username;
-
-          senderSelect.appendChild(option1);
-          receiverSelect.appendChild(option2);
-
-          const option3 = document.createElement('option');
-          option3.value = user.username;
-          option3.textContent = user.username;
-
-          bankTarget.appendChild(option3);
-        }
-      });
-    }
-
-    function addFunds() {
-      const username = document.getElementById('bankTarget').value;
-      const amount = parseFloat(document.getElementById('bankAmount').value);
-
-      const user = database.users.find(u => u.username === username);
-
-      if (!user || isNaN(amount) || amount <= 0) {
-        alert('Invalid operation');
-        return;
-      }
-
-      user.balance += amount;
-
-      user.transactions.push({
-        type: 'Bank Deposit',
-        message: `Bank added ${formatUSD(amount)} to your account`,
-        date: new Date().toLocaleString()
-      });
-
-      saveDatabase();
-      renderAdminView();
-
-      alert('Funds added successfully');
-    }
-
-    function subtractFunds() {
-      const username = document.getElementById('bankTarget').value;
-      const amount = parseFloat(document.getElementById('bankAmount').value);
-
-      const user = database.users.find(u => u.username === username);
-
-      if (!user || isNaN(amount) || amount <= 0) {
-        alert('Invalid operation');
-        return;
-      }
-
-      if (user.balance < amount) {
-        alert('Insufficient funds in target account');
-        return;
-      }
-
-      user.balance -= amount;
-
-      user.transactions.push({
-        type: 'Bank Withdrawal',
-        message: `Bank removed ${formatUSD(amount)} from your account`,
-        date: new Date().toLocaleString()
-      });
-
-      saveDatabase();
-      renderAdminView();
-
-      alert('Funds removed successfully');
-    }
-
-    function adminTransfer() {
-      const senderName = document.getElementById('adminSender').value;
-      const receiverName = document.getElementById('adminReceiver').value;
-      const amount = parseFloat(document.getElementById('adminAmount').value);
-
-      if (senderName === receiverName) {
-        alert('Sender and receiver must be different');
-        return;
-      }
-
-      const sender = database.users.find(u => u.username === senderName);
-      const receiver = database.users.find(u => u.username === receiverName);
-
-      if (!sender || !receiver) {
-        alert('Account missing');
-        return;
-      }
-
-      if (isNaN(amount) || amount <= 0) {
-        alert('Invalid amount');
-        return;
-      }
-
-      if (sender.balance < amount) {
-        alert('Sender does not have enough funds');
-        return;
-      }
-
-      sender.balance -= amount;
-      receiver.balance += amount;
-
-      const date = new Date().toLocaleString();
-
-      sender.transactions.push({
-        type: 'Admin Transfer Out',
-        message: `Admin transferred ${formatUSD(amount)} to ${receiver.username}`,
-        date
-      });
-
-      receiver.transactions.push({
-        type: 'Admin Transfer In',
-        message: `Admin transferred ${formatUSD(amount)} from ${sender.username}`,
-        date
-      });
-
-      saveDatabase();
-      renderAdminView();
-
-      alert('Admin transfer completed');
-    }
-
-    saveDatabase();
-
-    // =========================
-    // BACKEND API CONFIGURATION
-    // =========================
-    // Replace this URL with your backend server URL
-    // Example:
-    // const API_URL = 'https://your-server.onrender.com';
-    const API_URL = 'http://localhost:3000';
-  </script>
-
-  <!--
-  =====================================================
-  MULTI-DEVICE BACKEND SERVER SETUP
-  =====================================================
-
-  Create a file named server.js with the following code.
-
-  Run:
-    npm init -y
-    npm install express cors bcryptjs
-
-  Start server:
-    node server.js
-
-  =====================================================
-
-  const express = require('express');
-  const cors = require('cors');
-  const bcrypt = require('bcryptjs');
-  const fs = require('fs');
-
-  const app = express();
-
-  app.use(cors());
-  app.use(express.json());
-
-  const DB_FILE = './database.json';
-
-  function loadDB() {
-    if (!fs.existsSync(DB_FILE)) {
-      fs.writeFileSync(DB_FILE, JSON.stringify({ users: [] }, null, 2));
-    }
-
-    return JSON.parse(fs.readFileSync(DB_FILE));
-  }
-
-  function saveDB(data) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
-  }
-
-  // =========================
-  // CREATE ACCOUNT
-  // =========================
-  app.post('/register', async (req, res) => {
-    const db = loadDB();
-
-    const { username, password } = req.body;
-
-    const exists = db.users.find(u => u.username === username);
-
-    if (exists) {
-      return res.status(400).json({ error: 'Username already exists' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    db.users.push({
-      username,
-      password: hashedPassword,
-      balance: 0,
-      transactions: [],
-      role: 'user'
+        password
+      })
     });
 
-    saveDB(db);
+    const data = await res.json();
 
-    res.json({ success: true });
-  });
+    if (data.error) {
+      alert(data.error);
+      return;
+    }
+
+    alert("Account created");
+  }
 
   // =========================
   // LOGIN
   // =========================
-  app.post('/login', async (req, res) => {
-    const db = loadDB();
+  async function login() {
 
-    const { username, password } = req.body;
+    const username =
+      document.getElementById("loginUsername").value;
 
-    const user = db.users.find(u => u.username === username);
+    const password =
+      document.getElementById("loginPassword").value;
 
-    if (!user) {
-      return res.status(400).json({ error: 'User not found' });
-    }
-
-    const valid = await bcrypt.compare(password, user.password);
-
-    if (!valid) {
-      return res.status(401).json({ error: 'Invalid password' });
-    }
-
-    res.json({
-      username: user.username,
-      balance: user.balance,
-      role: user.role,
-      transactions: user.transactions
-    });
-  });
-
-  // =========================
-  // USER TRANSFER
-  // =========================
-  app.post('/transfer', (req, res) => {
-    const db = loadDB();
-
-    const { sender, receiver, amount } = req.body;
-
-    const senderUser = db.users.find(u => u.username === sender);
-    const receiverUser = db.users.find(u => u.username === receiver);
-
-    if (!senderUser || !receiverUser) {
-      return res.status(400).json({ error: 'User missing' });
-    }
-
-    if (senderUser.balance < amount) {
-      return res.status(400).json({ error: 'Insufficient funds' });
-    }
-
-    senderUser.balance -= amount;
-    receiverUser.balance += amount;
-
-    const date = new Date().toLocaleString();
-
-    senderUser.transactions.push({
-      type: 'Sent',
-      message: `Sent $${amount} to ${receiver}`,
-      date
+    const res = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username,
+        password
+      })
     });
 
-    receiverUser.transactions.push({
-      type: 'Received',
-      message: `Received $${amount} from ${sender}`,
-      date
+    const data = await res.json();
+
+    if (data.error) {
+      alert(data.error);
+      return;
+    }
+
+    currentUser = data;
+
+    document.getElementById("loginView")
+      .classList.add("hidden");
+
+    if (data.role === "admin") {
+      document.getElementById("adminView")
+        .classList.remove("hidden");
+
+      loadUsers();
+
+    } else {
+      document.getElementById("userView")
+        .classList.remove("hidden");
+
+      document.getElementById("welcomeUser")
+        .innerText = `Welcome ${data.username}`;
+
+      updateBalance(data.balance);
+    }
+  }
+
+  // =========================
+  // LOGOUT
+  // =========================
+  function logout() {
+
+    currentUser = null;
+
+    document.getElementById("loginView")
+      .classList.remove("hidden");
+
+    document.getElementById("userView")
+      .classList.add("hidden");
+
+    document.getElementById("adminView")
+      .classList.add("hidden");
+  }
+
+  // =========================
+  // BALANCE
+  // =========================
+  function updateBalance(balance) {
+
+    document.getElementById("userBalance")
+      .innerText =
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD"
+      }).format(balance);
+  }
+
+  // =========================
+  // TRANSFER
+  // =========================
+  async function transferMoney() {
+
+    const receiver =
+      document.getElementById("transferUser").value;
+
+    const amount =
+      Number(document.getElementById("transferAmount").value);
+
+    const res = await fetch(`${API_URL}/transfer`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        sender: currentUser.username,
+        receiver,
+        amount
+      })
     });
 
-    saveDB(db);
+    const data = await res.json();
 
-    res.json({ success: true });
-  });
-
-  // =========================
-  // GET ALL USERS (ADMIN)
-  // =========================
-  app.get('/users', (req, res) => {
-    const db = loadDB();
-
-    res.json(db.users.map(user => ({
-      username: user.username,
-      balance: user.balance,
-      role: user.role
-    })));
-  });
-
-  // =========================
-  // ADMIN BALANCE CONTROL
-  // =========================
-  app.post('/admin/balance', (req, res) => {
-    const db = loadDB();
-
-    const { username, amount, action } = req.body;
-
-    const user = db.users.find(u => u.username === username);
-
-    if (!user) {
-      return res.status(400).json({ error: 'User not found' });
+    if (data.error) {
+      alert(data.error);
+      return;
     }
 
-    if (action === 'add') {
-      user.balance += amount;
-    }
+    alert("Transfer complete");
 
-    if (action === 'subtract') {
-      if (user.balance < amount) {
-        return res.status(400).json({ error: 'Insufficient balance' });
-      }
-
-      user.balance -= amount;
-    }
-
-    user.transactions.push({
-      type: 'Bank Action',
-      message: `Bank ${action}ed $${amount}`,
-      date: new Date().toLocaleString()
-    });
-
-    saveDB(db);
-
-    res.json({ success: true });
-  });
+    location.reload();
+  }
 
   // =========================
   // CHANGE PASSWORD
   // =========================
-  app.post('/change-password', async (req, res) => {
-    const db = loadDB();
+  async function changePassword() {
 
-    const { username, currentPassword, newPassword } = req.body;
-
-    const user = db.users.find(u => u.username === username);
-
-    if (!user) {
-      return res.status(400).json({ error: 'User not found' });
-    }
-
-    const valid = await bcrypt.compare(currentPassword, user.password);
-
-    if (!valid) {
-      return res.status(401).json({ error: 'Wrong password' });
-    }
-
-    user.password = await bcrypt.hash(newPassword, 10);
-
-    saveDB(db);
-
-    res.json({ success: true });
-  });
-
-  // =========================
-  // DEFAULT ADMIN ACCOUNT
-  // =========================
-  async function createDefaultAdmin() {
-    const db = loadDB();
-
-    const exists = db.users.find(u => u.username === 'admin');
-
-    if (!exists) {
-      db.users.push({
-        username: 'admin',
-        password: await bcrypt.hash('admin', 10),
-        balance: 0,
-        role: 'admin',
-        transactions: []
-      });
-
-      saveDB(db);
-    }
+    alert(
+      "Add the /change-password route in worker.js first."
+    );
   }
 
-  createDefaultAdmin();
+  // =========================
+  // LOAD USERS
+  // =========================
+  async function loadUsers() {
 
-  app.listen(3000, () => {
-    console.log('Bank server running on port 3000');
-  });
+    const res = await fetch(`${API_URL}/users`);
 
-  =====================================================
+    const users = await res.json();
 
-  DEPLOYMENT OPTIONS
+    const usersDiv =
+      document.getElementById("allUsers");
 
-  Backend Hosting:
-    - Render
-    - Railway
-    - VPS/Linux Server
-    - Replit
+    const bankSelect =
+      document.getElementById("bankUser");
 
-  Frontend Hosting:
-    - Netlify
-    - Cloudflare Pages
-    - Vercel
-    - GitHub Pages
+    usersDiv.innerHTML = "";
+    bankSelect.innerHTML = "";
 
-  =====================================================
-  -->
+    users.forEach(user => {
+
+      const div = document.createElement("div");
+
+      div.className = "account";
+
+      div.innerHTML = `
+        <strong>${user.username}</strong><br>
+        Balance:
+        ${new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD"
+        }).format(user.balance)}
+      `;
+
+      usersDiv.appendChild(div);
+
+      const option =
+        document.createElement("option");
+
+      option.value = user.username;
+      option.innerText = user.username;
+
+      bankSelect.appendChild(option);
+    });
+  }
+
+  // =========================
+  // ADD MONEY
+  // =========================
+  async function addMoney() {
+
+    const username =
+      document.getElementById("bankUser").value;
+
+    const amount =
+      Number(document.getElementById("bankAmount").value);
+
+    await fetch(`${API_URL}/admin/balance`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username,
+        amount,
+        action: "add"
+      })
+    });
+
+    loadUsers();
+  }
+
+  // =========================
+  // REMOVE MONEY
+  // =========================
+  async function removeMoney() {
+
+    const username =
+      document.getElementById("bankUser").value;
+
+    const amount =
+      Number(document.getElementById("bankAmount").value);
+
+    await fetch(`${API_URL}/admin/balance`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username,
+        amount,
+        action: "subtract"
+      })
+    });
+
+    loadUsers();
+  }
+
 </script>
+
 </body>
 </html>
