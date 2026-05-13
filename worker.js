@@ -15,7 +15,7 @@ export default {
       }
 
       try {
-        await env.prod_d1_tutorial.prepare(
+        await env.nxbankuser.prepare(
           `INSERT INTO users (username, password, balance, role)
            VALUES (?, ?, ?, ?)`
         )
@@ -39,7 +39,7 @@ export default {
 
       const { username, password } = body;
 
-      const user = await env.prod_d1_tutorial.prepare(
+      const user = await env.nxbankuser.prepare(
         `SELECT * FROM users
          WHERE username = ? AND password = ?`
       )
@@ -68,13 +68,13 @@ export default {
 
       const { sender, receiver, amount } = body;
 
-      const senderUser = await env.prod_d1_tutorial.prepare(
+      const senderUser = await env.nxbankuser.prepare(
         `SELECT * FROM users WHERE username = ?`
       )
         .bind(sender)
         .first();
 
-      const receiverUser = await env.prod_d1_tutorial.prepare(
+      const receiverUser = await env.nxbankuser.prepare(
         `SELECT * FROM users WHERE username = ?`
       )
         .bind(receiver)
@@ -94,7 +94,7 @@ export default {
         );
       }
 
-      await env.prod_d1_tutorial.prepare(
+      await env.nxbankuser.prepare(
         `UPDATE users
          SET balance = balance - ?
          WHERE username = ?`
@@ -102,7 +102,7 @@ export default {
         .bind(amount, sender)
         .run();
 
-      await env.prod_d1_tutorial.prepare(
+      await env.nxbankuser.prepare(
         `UPDATE users
          SET balance = balance + ?
          WHERE username = ?`
@@ -110,7 +110,7 @@ export default {
         .bind(amount, receiver)
         .run();
 
-      await env.prod_d1_tutorial.prepare(
+      await env.nxbankuser.prepare(
         `INSERT INTO transactions
          (sender, receiver, amount, type, created_at)
          VALUES (?, ?, ?, ?, ?)`
@@ -131,7 +131,7 @@ export default {
     // GET USERS (ADMIN)
     // =========================
     if (url.pathname === "/users") {
-      const users = await env.prod_d1_tutorial.prepare(
+      const users = await env.nxbankuser.prepare(
         `SELECT username, balance, role FROM users`
       ).all();
 
