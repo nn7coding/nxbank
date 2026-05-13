@@ -1,486 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cloudflare Banking App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NX Bank</title>
 
-  <style>
-    :root {
-      --bg: #f4f4f5;
-      --card: #ffffff;
-      --text: #111827;
-      --border: #d1d5db;
-      --accent: #2563eb;
-      --success: #16a34a;
-      --danger: #dc2626;
-    }
+<style>
+body { font-family: Arial; margin:0; padding:20px; background:#111; color:white; }
+input,button,select { width:100%; padding:10px; margin:5px 0; }
+.card { background:#222; padding:15px; margin-bottom:15px; border-radius:10px; }
+.hidden { display:none; }
+</style>
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0f172a;
-        --card: #1e293b;
-        --text: #f8fafc;
-        --border: #334155;
-        --accent: #3b82f6;
-        --success: #22c55e;
-        --danger: #ef4444;
-      }
-    }
-
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    input, button, select {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-    }
-
-    button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .success {
-      background: var(--success);
-    }
-
-    .danger {
-      background: var(--danger);
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .balance {
-      font-size: 2rem;
-      font-weight: bold;
-      color: var(--success);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
-      gap: 20px;
-    }
-
-    .account {
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 12px;
-      margin-top: 10px;
-    }
-  </style>
 </head>
-
 <body>
 
-<div class="container">
-
-  <!-- LOGIN -->
-  <div id="loginView" class="card">
-    <h1>USD Banking App</h1>
-
-    <input id="loginUsername" placeholder="Username">
-    <input id="loginPassword" type="password" placeholder="Password">
-
+<div id="login">
+  <div class="card">
+    <h2>Login</h2>
+    <input id="u" placeholder="username">
+    <input id="p" type="password" placeholder="password">
     <button onclick="login()">Login</button>
 
-    <hr>
-
     <h3>Create Account</h3>
+    <input id="ru" placeholder="new user">
+    <input id="rp" type="password">
+    <button onclick="register()">Register</button>
+  </div>
+</div>
 
-    <input id="registerUsername" placeholder="Username">
-    <input id="registerPassword" type="password" placeholder="Password">
-
-    <button class="success" onclick="register()">
-      Create Account
-    </button>
+<div id="user" class="hidden">
+  <div class="card">
+    <h2 id="welcome"></h2>
+    <p id="bal"></p>
+    <button onclick="logout()">Logout</button>
   </div>
 
-  <!-- USER VIEW -->
-  <div id="userView" class="hidden">
+  <div class="card">
+    <h3>Transfer</h3>
+    <input id="to" placeholder="receiver">
+    <input id="amt" type="number">
+    <button onclick="transfer()">Send</button>
+  </div>
+</div>
 
-    <div class="card">
-      <h2 id="welcomeUser"></h2>
-
-      <p>Balance</p>
-      <div class="balance" id="userBalance">$0</div>
-
-      <button class="danger" onclick="logout()">
-        Logout
-      </button>
-    </div>
-
-    <div class="card">
-      <h3>Transfer Money</h3>
-
-      <input id="transferUser" placeholder="Receiver Username">
-
-      <input
-        id="transferAmount"
-        type="number"
-        placeholder="Amount"
-      >
-
-      <button onclick="transferMoney()">
-        Send Money
-      </button>
-    </div>
-
-    <div class="card">
-      <h3>Change Password</h3>
-
-      <input
-        id="newPassword"
-        type="password"
-        placeholder="New Password"
-      >
-
-      <button onclick="changePassword()">
-        Change Password
-      </button>
-    </div>
-
+<div id="admin" class="hidden">
+  <div class="card">
+    <h2>Admin Panel</h2>
+    <button onclick="logout()">Logout</button>
   </div>
 
-  <!-- ADMIN VIEW -->
-  <div id="adminView" class="hidden">
-
-    <div class="card">
-      <h2>Bank Dashboard</h2>
-
-      <button class="danger" onclick="logout()">
-        Logout
-      </button>
-    </div>
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>All Accounts</h3>
-
-        <div id="allUsers"></div>
-      </div>
-
-      <div class="card">
-        <h3>Bank Controls</h3>
-
-        <select id="bankUser"></select>
-
-        <input
-          id="bankAmount"
-          type="number"
-          placeholder="Amount"
-        >
-
-        <button class="success" onclick="addMoney()">
-          Add Money
-        </button>
-
-        <button class="danger" onclick="removeMoney()">
-          Remove Money
-        </button>
-      </div>
-
-    </div>
-
+  <div class="card">
+    <h3>Users</h3>
+    <div id="list"></div>
   </div>
 
+  <div class="card">
+    <select id="target"></select>
+    <input id="amount" type="number">
+    <button onclick="add()">Add</button>
+    <button onclick="sub()">Remove</button>
+  </div>
 </div>
 
 <script>
 
-  // CHANGE THIS
-  const API_URL = "https://nxbank.nevinnevin7.workers.dev";
+const API = "https://nxbank.nevinnevin7.workers.dev";
 
-  let currentUser = null;
+let me=null;
 
-  // =========================
-  // REGISTER
-  // =========================
-  async function register() {
+async function login(){
+const r=await fetch(API+"/login",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:u.value,password:p.value})});
+const d=await r.json();
+if(d.error)return alert(d.error);
+me=d;
 
-    const username =
-      document.getElementById("registerUsername").value;
+login.style.display="none";
 
-    const password =
-      document.getElementById("registerPassword").value;
+if(d.role=="admin"){
+admin.classList.remove("hidden");
+load();
+}else{
+user.classList.remove("hidden");
+welcome.innerText="Hi "+d.username;
+bal.innerText="$"+d.balance;
+}
+}
 
-    const res = await fetch(`${API_URL}/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username,
-        password
-      })
-    });
+async function register(){
+await fetch(API+"/register",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:ru.value,password:rp.value})});
+alert("done");
+}
 
-    const data = await res.json();
+async function transfer(){
+const r=await fetch(API+"/transfer",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({sender:me.username,receiver:to.value,amount:amt.value})});
+alert((await r.json()).success?"sent":"error");
+}
 
-    if (data.error) {
-      alert(data.error);
-      return;
-    }
+async function load(){
+const r=await fetch(API+"/users");
+const d=await r.json();
+list.innerHTML="";
+target.innerHTML="";
+d.forEach(x=>{
+list.innerHTML+=`<div>${x.username} $${x.balance}</div>`;
+target.innerHTML+=`<option>${x.username}</option>`;
+});
+}
 
-    alert("Account created");
-  }
+async function add(){
+await fetch(API+"/admin/balance",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:target.value,amount:Number(amount.value),action:"add"})});
+load();
+}
 
-  // =========================
-  // LOGIN
-  // =========================
-  async function login() {
+async function sub(){
+await fetch(API+"/admin/balance",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:target.value,amount:Number(amount.value),action:"subtract"})});
+load();
+}
 
-    const username =
-      document.getElementById("loginUsername").value;
-
-    const password =
-      document.getElementById("loginPassword").value;
-
-    const res = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username,
-        password
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.error) {
-      alert(data.error);
-      return;
-    }
-
-    currentUser = data;
-
-    document.getElementById("loginView")
-      .classList.add("hidden");
-
-    if (data.role === "admin") {
-      document.getElementById("adminView")
-        .classList.remove("hidden");
-
-      loadUsers();
-
-    } else {
-      document.getElementById("userView")
-        .classList.remove("hidden");
-
-      document.getElementById("welcomeUser")
-        .innerText = `Welcome ${data.username}`;
-
-      updateBalance(data.balance);
-    }
-  }
-
-  // =========================
-  // LOGOUT
-  // =========================
-  function logout() {
-
-    currentUser = null;
-
-    document.getElementById("loginView")
-      .classList.remove("hidden");
-
-    document.getElementById("userView")
-      .classList.add("hidden");
-
-    document.getElementById("adminView")
-      .classList.add("hidden");
-  }
-
-  // =========================
-  // BALANCE
-  // =========================
-  function updateBalance(balance) {
-
-    document.getElementById("userBalance")
-      .innerText =
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD"
-      }).format(balance);
-  }
-
-  // =========================
-  // TRANSFER
-  // =========================
-  async function transferMoney() {
-
-    const receiver =
-      document.getElementById("transferUser").value;
-
-    const amount =
-      Number(document.getElementById("transferAmount").value);
-
-    const res = await fetch(`${API_URL}/transfer`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        sender: currentUser.username,
-        receiver,
-        amount
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.error) {
-      alert(data.error);
-      return;
-    }
-
-    alert("Transfer complete");
-
-    location.reload();
-  }
-
-  // =========================
-  // CHANGE PASSWORD
-  // =========================
-  async function changePassword() {
-
-    alert(
-      "Add the /change-password route in worker.js first."
-    );
-  }
-
-  // =========================
-  // LOAD USERS
-  // =========================
-  async function loadUsers() {
-
-    const res = await fetch(`${API_URL}/users`);
-
-    const users = await res.json();
-
-    const usersDiv =
-      document.getElementById("allUsers");
-
-    const bankSelect =
-      document.getElementById("bankUser");
-
-    usersDiv.innerHTML = "";
-    bankSelect.innerHTML = "";
-
-    users.forEach(user => {
-
-      const div = document.createElement("div");
-
-      div.className = "account";
-
-      div.innerHTML = `
-        <strong>${user.username}</strong><br>
-        Balance:
-        ${new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD"
-        }).format(user.balance)}
-      `;
-
-      usersDiv.appendChild(div);
-
-      const option =
-        document.createElement("option");
-
-      option.value = user.username;
-      option.innerText = user.username;
-
-      bankSelect.appendChild(option);
-    });
-  }
-
-  // =========================
-  // ADD MONEY
-  // =========================
-  async function addMoney() {
-
-    const username =
-      document.getElementById("bankUser").value;
-
-    const amount =
-      Number(document.getElementById("bankAmount").value);
-
-    await fetch(`${API_URL}/admin/balance`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username,
-        amount,
-        action: "add"
-      })
-    });
-
-    loadUsers();
-  }
-
-  // =========================
-  // REMOVE MONEY
-  // =========================
-  async function removeMoney() {
-
-    const username =
-      document.getElementById("bankUser").value;
-
-    const amount =
-      Number(document.getElementById("bankAmount").value);
-
-    await fetch(`${API_URL}/admin/balance`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username,
-        amount,
-        action: "subtract"
-      })
-    });
-
-    loadUsers();
-  }
+function logout(){location.reload();}
 
 </script>
 
